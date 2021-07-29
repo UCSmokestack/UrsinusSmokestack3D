@@ -1,0 +1,97 @@
+# File produced by Open Asset Import Library (http://www.assimp.sf.net)
+# (assimp v4.1.0)
+
+newmtl DefaultMaterial
+Kd 0.6000000238418579 0.6000000238418579 0.6000000238418579
+Ka 0 0 0
+Ks 0 0 0
+Ke 0 0 0
+Tf 1 1 1
+d 1
+Ni 1
+illum 1
+
+newmtl material0000
+Kd 1 1 1
+Ka 1 1 1
+Ks 0 0 0
+Ke 0 0 0
+Tf 1 1 1
+d 1
+Ni 1
+Ns 1
+illum 2
+map_Kd model_surface_text_material0000_map_Kd.png
+
+newmtl material0001
+Kd 1 1 1
+Ka 1 1 1
+Ks 0 0 0
+Ke 0 0 0
+Tf 1 1 1
+d 1
+Ni 1
+Ns 1
+illum 2
+map_Kd model_surface_text_material0001_map_Kd.png
+
+newmtl material0002
+Kd 1 1 1
+Ka 1 1 1
+Ks 0 0 0
+Ke 0 0 0
+Tf 1 1 1
+d 1
+Ni 1
+Ns 1
+illum 2
+map_Kd model_surface_text_material0002_map_Kd.png
+
+newmtl material0003
+Kd 1 1 1
+Ka 1 1 1
+Ks 0 0 0
+Ke 0 0 0
+Tf 1 1 1
+d 1
+Ni 1
+Ns 1
+illum 2
+map_Kd model_surface_text_material0003_map_Kd.png
+
+newmtl material0004
+Kd 1 1 1
+Ka 1 1 1
+Ks 0 0 0
+Ke 0 0 0
+Tf 1 1 1
+d 1
+Ni 1
+Ns 1
+illum 2
+map_Kd model_surface_text_material0004_map_Kd.png
+
+newmtl material0005
+Kd 1 1 1
+Ka 1 1 1
+Ks 0 0 0
+Ke 0 0 0
+Tf 1 1 1
+d 1
+Ni 1
+Ns 1
+illum 2
+map_Kd model_surface_text_material0005_map_Kd.png
+
+newmtl material0006
+Kd 1 1 1
+Ka 1 1 1
+Ks 0 0 0
+Ke 0 0 0
+Tf 1 1 1
+d 1
+Ni 1
+Ns 1
+illum 2
+map_Kd model_surface_text_material0006_map_Kd.png
+
