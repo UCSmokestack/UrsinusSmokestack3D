@@ -14,7 +14,10 @@
 // use buffer geometry to be able to index all of the vertices by color
 // use picking to know what vertex was clicked
 
-function centerOnBBox(object) {
+function centerOnBBox(object, objzoff) {
+    if (objzoff === undefined) {
+        objzoff = 0;
+    }
     // bounding box
     let box = new THREE.Box3().setFromObject(object);
     // dimensions of the bounding box
@@ -24,7 +27,7 @@ function centerOnBBox(object) {
     let boxCenter = box.getCenter(new THREE.Vector3());
     object.position.x += boxCenter.x;
     object.position.y += boxCenter.y;
-    object.position.z += boxCenter.z;
+    object.position.z += boxCenter.z+objzoff;
     // set model upright
     object.rotation.x += 2.5;
 }
@@ -32,7 +35,8 @@ function centerOnBBox(object) {
 // center the model
 // fix github
 class ArtCanvas {
-    constructor() {
+    constructor(zpos, objzoff) {
+        this.objzoff = objzoff;
         let that = this;
         let canvas = document.getElementById("threecanvas");
         const gl = canvas.getContext('webgl');
@@ -69,7 +73,7 @@ class ArtCanvas {
             near,
             far
         );
-        camera.position.z = 50;
+        camera.position.z = zpos;
         this.camera = camera;
 
         // renderer
@@ -170,7 +174,7 @@ class ArtCanvas {
                         }
                     });
                     canvas.pickerMesh = object;
-                    centerOnBBox(object);
+                    centerOnBBox(object, canvas.objzoff);
                     canvas.scene.add(object);
                     canvas.updateVisibility();
                     requestAnimationFrame(canvas.render.bind(canvas));
@@ -196,7 +200,7 @@ class ArtCanvas {
             objLoader.setMaterials(mtl);
             objLoader.load(filename, function(object) {       
                 canvas.textureMesh = object;
-                centerOnBBox(object);
+                centerOnBBox(object, canvas.objzoff);
                 canvas.scene.add(object);
                 canvas.loadMeshPickerTexture(filename);
                 requestAnimationFrame(canvas.render.bind(canvas));
