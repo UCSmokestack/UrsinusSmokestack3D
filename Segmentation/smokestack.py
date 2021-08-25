@@ -36,15 +36,16 @@ def get_data(start, end, size=(512, 512), n_augment=0):
 
 
 
-def get_blur_data(num, sz=256, stride=64, sigma=2):
+def get_blur_data(start, end, sz=256, stride=64, sigma=4, noise=0.3):
     from glob import glob
     from skimage.filters import gaussian
     Xs = []
     Ys = []
-    for f in glob("Drone/DroneFramesCropped/Stills/*")[0:num]:
+    for i in range(start, end+1):
+        f = "Drone/DroneFramesCropped/Stills/DJI_%.4i.JPG"%i
         print(".", end='')
         I = imread(f)
-        IBlur = gaussian(I, sigma=sigma, multichannel=True)
+        IBlur = gaussian(I + noise*np.random.randn(I.shape[0], I.shape[1])[:, :, None], sigma=sigma, multichannel=True)
         for i in range(0, I.shape[0]-sz, stride):
             for j in range(0, I.shape[1]-sz, stride):
                 y = I[i:i+sz, j:j+sz, :]
@@ -52,7 +53,5 @@ def get_blur_data(num, sz=256, stride=64, sigma=2):
                     y = np.array(y, dtype=np.float32)/255
                     x = np.array(IBlur[i:i+sz, j:j+sz, :], dtype=np.float32)
                     Xs.append(np.moveaxis(x, -1, 0))
-                    #Ys.append(np.moveaxis(y, -1, 0))
-                    #Xs.append(rgb2gray(x))
                     Ys.append(rgb2gray(y))
     return Xs, Ys
