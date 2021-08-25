@@ -2,6 +2,7 @@ from skimage import transform
 from skimage.transform import resize, rotate, EuclideanTransform
 import numpy as np
 from skimage.io import imread
+from skimage.color import rgb2gray
 
 def get_random_transform(I, Mask, rrange, trange):
     symrand = lambda rg: rg*(2*np.random.rand()-1)/2
@@ -32,3 +33,26 @@ def get_data(start, end, size=(512, 512), n_augment=0):
     images = [np.array(np.moveaxis(I, -1, 0), dtype=np.float32) for I in images]
     annotations = [np.array(I, dtype=np.float32) for I in annotations]
     return images, annotations
+
+
+
+def get_blur_data(num, sz=256, stride=64, sigma=2):
+    from glob import glob
+    from skimage.filters import gaussian
+    Xs = []
+    Ys = []
+    for f in glob("Drone/DroneFramesCropped/Stills/*")[0:num]:
+        print(".", end='')
+        I = imread(f)
+        IBlur = gaussian(I, sigma=sigma, multichannel=True)
+        for i in range(0, I.shape[0]-sz, stride):
+            for j in range(0, I.shape[1]-sz, stride):
+                y = I[i:i+sz, j:j+sz, :]
+                if np.sum(y == 255) < y.size:
+                    y = np.array(y, dtype=np.float32)/255
+                    x = np.array(IBlur[i:i+sz, j:j+sz, :], dtype=np.float32)
+                    Xs.append(np.moveaxis(x, -1, 0))
+                    #Ys.append(np.moveaxis(y, -1, 0))
+                    #Xs.append(rgb2gray(x))
+                    Ys.append(rgb2gray(y))
+    return Xs, Ys
