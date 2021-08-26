@@ -196,7 +196,6 @@ class ArtCanvas {
         const objLoader = new OBJLoader();
         
         mtlLoader.load(matfilename, (mtl) => {
-            console.log("Material loaded");
             mtl.preload();
             objLoader.setMaterials(mtl);
             objLoader.load(filename, function(object) {       
