@@ -70,9 +70,9 @@
 
         <!-- my stuff -->
         <script>
-            let filename = 'models/AllVideos_Minus2Zoom/texturedMesh.obj';
-            let matname = 'models/AllVideos_Minus2Zoom/texturedMesh.mtl';
-            let canvas = new ArtCanvas(1, 0.8);
+            let filename = 'models/Final/highres.obj';
+            let matname = 'models/Final/highres.mtl';
+            let canvas = new ArtCanvas(3, [0, -0.2, -0.1]);
             canvas.loadMesh(filename, matname);
             function toggleTexture() {
                 canvas.toggleTexture();

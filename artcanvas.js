@@ -14,9 +14,9 @@
 // use buffer geometry to be able to index all of the vertices by color
 // use picking to know what vertex was clicked
 
-function centerOnBBox(object, objzoff) {
-    if (objzoff === undefined) {
-        objzoff = 0;
+function centerOnBBox(object, objoff) {
+    if (objoff === undefined) {
+        objoff = [0, 0, 0];
     }
     // bounding box
     let box = new THREE.Box3().setFromObject(object);
@@ -25,18 +25,18 @@ function centerOnBBox(object, objzoff) {
     box.getSize(dimensions);
     // center the model
     let boxCenter = box.getCenter(new THREE.Vector3());
-    object.position.x += boxCenter.x;
-    object.position.y += boxCenter.y;
-    object.position.z += boxCenter.z+objzoff;
+    object.position.x += boxCenter.x+objoff[0];
+    object.position.y += boxCenter.y+objoff[1];
+    object.position.z += boxCenter.z+objoff[2];
     // set model upright
-    object.rotation.x += 2.5;
+    object.rotation.x += 3.14;
 }
 
 // center the model
 // fix github
 class ArtCanvas {
-    constructor(zpos, objzoff) {
-        this.objzoff = objzoff;
+    constructor(zpos, objoff) {
+        this.objoff = objoff;
         let that = this;
         let canvas = document.getElementById("threecanvas");
         const gl = canvas.getContext('webgl');
@@ -174,7 +174,7 @@ class ArtCanvas {
                         }
                     });
                     canvas.pickerMesh = object;
-                    centerOnBBox(object, canvas.objzoff);
+                    centerOnBBox(object, canvas.objoff);
                     canvas.scene.add(object);
                     canvas.updateVisibility();
                     requestAnimationFrame(canvas.render.bind(canvas));
@@ -196,11 +196,12 @@ class ArtCanvas {
         const objLoader = new OBJLoader();
         
         mtlLoader.load(matfilename, (mtl) => {
+            console.log("Material loaded");
             mtl.preload();
             objLoader.setMaterials(mtl);
             objLoader.load(filename, function(object) {       
                 canvas.textureMesh = object;
-                centerOnBBox(object, canvas.objzoff);
+                centerOnBBox(object, canvas.objoff);
                 canvas.scene.add(object);
                 canvas.loadMeshPickerTexture(filename);
                 requestAnimationFrame(canvas.render.bind(canvas));
