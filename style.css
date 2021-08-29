@@ -1,0 +1,44 @@
+html, body {
+  margin: 0;
+  height: 100%;
+}
+textarea {
+  width: 100%;
+  height: 50%;
+}
+div#canvasarea {
+  width: 71%;
+  float: left;
+}
+div#textarea {
+  width: 28%;
+  float: left;
+}
+
+body {
+  color: #eee;
+  background: #333333;
+  min-width: 600px;
+  margin-top: 0px;
+  margin-right: auto;
+
+  font-family: sans-serif;
+  font-weight: normal;
+  font-variant: normal;
+  font-size: 1em;
+  font-style: normal;
+  text-decoration: none;
+  text-transform: none;
+}
+
+a {
+  text-decoration: underline;
+  color: #aaaaaa;
+  font-size: .9em;
+  font-family: sans-serif;
+}
+
+a:hover {
+  text-decoration: underline;
+  color: #5577ff;
+}
