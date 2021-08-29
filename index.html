@@ -1,16 +1,8 @@
 <!DOCTYPE html>
 <html>
-    
     <head>
-        <!-- 
-        <canvas id="c"></canvas>
-        -->
-        <style>
-            html, body {
-               margin: 0;
-               height: 100%;
-            }
-        </style>
+        <link rel="stylesheet" href="style.css" />
+        <meta charset="utf-8" />
     </head>
 
     <body>
@@ -42,16 +34,19 @@
         <script type="text/javascript" src="progressbar.js"></script>
         <script type="text/javascript" src="pickhelper.js"></script>
 
-        <h3>
-            <p id="pagestatus"></p>
-        </h3>
-        <table>
-            <tr>
-                <td>
-                    <canvas id="threecanvas"></canvas>
-                </td>
-            </tr>
-        </table>
+        <div id="canvasarea">
+            <h3>
+                <p id="pagestatus"></p>
+            </h3>
+            <canvas id="threecanvas"></canvas>
+        </div>
+        <div id="textarea">
+            <h3>Annotation</h3>
+            <textarea id="w3review" name="w3review" rows="10" cols="40">
+                Annotation text goes here
+            </textarea>
+            <a href = "http://www.ctralie.com">Chris Tralie</a>
+        </div>
 
         <script type="text/javascript" src="main.js"></script>
 
