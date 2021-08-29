@@ -8,11 +8,7 @@
 // https://threejs.org/docs/index.html?q=ray#api/en/core/Raycaster 
 
 
-// make vertex shader for smoke stack
-// load an invisible smokestack
-// use vertex shader on invisible smokestack
-// use buffer geometry to be able to index all of the vertices by color
-// use picking to know what vertex was clicked
+const SPHERE_SIZE = 0.02;
 
 function centerOnBBox(object, objoff) {
     if (objoff === undefined) {
@@ -35,26 +31,23 @@ function centerOnBBox(object, objoff) {
 // center the model
 // fix github
 class ArtCanvas {
-    constructor(zpos, objoff) {
-        this.objoff = objoff;
-        let that = this;
+    constructor(params) {
+        const that = this;
+        this.objoff = params.objoff;
         let canvas = document.getElementById("threecanvas");
         const gl = canvas.getContext('webgl');
         this.gl = gl;
-        let pixels = new Uint8Array(4);
-        this.pixels = pixels;
-        let red = 0;
-        this.red = red;
-        let green = 0;
-        this.green = green;
-        let blue = 0;
-        this.blue = blue;
-        let alpha = 0;
-        this.alpha = alpha;
-        let spot = [0,0,0];
-        this.spot = spot;
-        let clickObjects = [];
-        this.clickObjects = clickObjects;
+        this.pixels = new Uint8Array(4);
+        this.red = 0;
+        this.green = 0;
+        this.blue = 0;
+        this.alpha = 0;
+        this.spot = [0,0,0];
+        this.annotations = [];
+        this.pickingNew = true; // Whether we're able to pick new areas 
+        if ('pickingNew' in params) {
+            this.pickingNew = params['pickingNew'];
+        }
 
         let scene = new THREE.Scene();
         scene.background = new THREE.Color('gray');
@@ -65,16 +58,17 @@ class ArtCanvas {
         // camera
         const fov = 75;
         const aspect = 2;
-        const near = 0.1;
-        const far = 1000;
+        const near = 0.01;
+        const far = 100;
         let camera = new THREE.PerspectiveCamera(
             fov,
             aspect,
             near,
             far
         );
-        camera.position.z = zpos;
+        camera.position.z = params.zpos;
         this.camera = camera;
+        this.pickHelper = new PickHelper(scene, camera);
 
         // renderer
         let renderer = new THREE.WebGLRenderer( {canvas} ); // antiailiasing is off by default. https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer
@@ -100,7 +94,7 @@ class ArtCanvas {
         this.pickMat = null; // Picking material
 
         // Click variables
-        this.isClicked = false;
+        this.selectingSphere = false;
         this.eventLocation = null;
         this.toggleCount = 0;
         let cntrlIsPressed = false;
@@ -119,23 +113,24 @@ class ArtCanvas {
 
         // left click
         canvas.addEventListener("click", function(event){
-            if(cntrlIsPressed == true){
+            that.eventLocation = getEventLocation(event);
+            if(cntrlIsPressed == true && that.pickingNew){
+                // Making new annotation
                 scene.background = new THREE.Color('white');
-
-                that.isClicked = true;
-        
+                that.selectingSphere = true;
                 that.toggleX();
-
-                that.eventLocation = getEventLocation(event);
-                console.log("eventLocation: " + JSON.stringify(that.eventLocation));
             }
-            cntrlIsPressed = false;
+            else {
+                // Pick ordinary sphere
+                let pos = getRayPickPosition(canvas, event);
+                that.handleAnnotationPick(pos);
+            }
         }, false);
 
         // right click
         canvas.addEventListener("contextmenu", function(event){
             if(cntrlIsPressed == true){
-                let item = clickObjects.pop();
+                let item = annotations.pop();
                 if(typeof item !== 'undefined'){
                     scene.remove(item);
                     item.geometry.dispose();
@@ -143,12 +138,15 @@ class ArtCanvas {
                     item = undefined;
                 }
             }
-            cntrlIsPressed = false;
         },false);
 
         this.resizeCanvas();
         window.addEventListener('resize', () => {this.resizeCanvas()}, false);
 
+    }
+
+    handleAnnotationPick(pos) {
+        let picked = this.pickHelper.pick(pos);
     }
 
     /**
@@ -235,29 +233,23 @@ class ArtCanvas {
     }
 
     getPixels(){
-            const gl = this.gl;
-            const pixels = this.pixels;
-            let r = this.red;
-            let g = this.green;
-            let b = this.blue;
-            let a = this.alpha;
+        const gl = this.gl;
+        const pixels = this.pixels;
+        let r = this.red;
+        let g = this.green;
+        let b = this.blue;
+        let a = this.alpha;
 
-            const x = this.eventLocation.x;
-            const y = this.renderer.domElement.clientHeight - this.eventLocation.y;
+        const x = this.eventLocation.x;
+        const y = this.renderer.domElement.clientHeight - this.eventLocation.y;
 
-            gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-            
-            r = pixels[0];
-            g = pixels[1];
-            b = pixels[2];
-            a = pixels[3];
-
-            console.log("r: " + r);
-            console.log("g: " + g);
-            console.log("b: " + b);
-            console.log("a: " + a);
-
-            return [r,g,b,a];
+        gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+        
+        r = pixels[0];
+        g = pixels[1];
+        b = pixels[2];
+        a = pixels[3];
+        return [r,g,b,a];
     }
 
     // render animation
@@ -265,48 +257,40 @@ class ArtCanvas {
         this.controls.update();
         this.renderer.render(this.scene, this.camera);
 
-        if(this.isClicked){
-            
+        if(this.selectingSphere){
             if(compareColors(this.getPixels(), [255,255,255])){
                 this.scene.background = new THREE.Color('gray');
                 this.toggleCount = -1;
-                this.isClicked = false;
+                this.selectingSphere = false;
                 this.toggleTexture();
             }
-            
             switch(this.toggleCount){
                 case 0:
                     this.spot[0] = this.backToCoords(this.getPixels());
                     this.toggleY();
                     this.toggleCount++;
-                    console.log("get X: " + this.getPixels());
                     break;
                 case 1:
                     this.spot[1] = this.backToCoords(this.getPixels());
                     this.toggleZ();
                     this.toggleCount++;
-                    console.log("get Y: " + this.getPixels());
                     break;
                 case 2:
                     this.spot[2] = this.backToCoords(this.getPixels());
                     this.toggleTexture();
                     this.scene.background = new THREE.Color('gray');
-
-                    console.log("get Z: " + this.getPixels());
-
                     this.addSphere(this.spot[0], this.spot[1], this.spot[2]);
 
                     this.toggleCount = 0;
-                    this.isClicked = false;
+                    this.selectingSphere = false;
                     break;
                 default:
                     this.scene.background = new THREE.Color('gray');
                     this.toggleCount = 0;
-                    this.isClicked = false;
+                    this.selectingSphere = false;
                     break;
             }
         }
-
         requestAnimationFrame(this.render.bind(this)); // Keep the animation going
     }
 
@@ -325,27 +309,23 @@ class ArtCanvas {
     }
 
     toggleTexture() {
-        console.log("toggling");
         this.displayTexture = !this.displayTexture;
         this.updateVisibility();
     }
 
     toggleX() {
-        console.log("togglingX");
         this.displayTexture = false;
         this.pickMat.uniforms.coord_choice.value = 1;
         this.updateVisibility();
     }
 
     toggleY() {
-        console.log("togglingY");
         this.displayTexture = false;
         this.pickMat.uniforms.coord_choice.value = 2;
         this.updateVisibility();
     }
 
     toggleZ() {
-        console.log("togglingZ");
         this.displayTexture = false;
         this.pickMat.uniforms.coord_choice.value = 3;
         this.updateVisibility();
@@ -355,25 +335,20 @@ class ArtCanvas {
         let coord = (rgba[0] << 16) | (rgba[1] << 8) | (rgba[2]);
         coord /= ((256*256*256)-1);
         coord = (coord * 200) - 100;
-
-        console.log("backToCoords: " + coord);
         return coord;
-        
     }
 
     addSphere(X, Y, Z){
-        const geometry = new THREE.SphereGeometry( 0.02, 32, 32 );
-        const material = new THREE.MeshBasicMaterial( {color: 0xffff00, transparent:true, opacity:0.5} );
-        const sphere = new THREE.Mesh( geometry, material );
-        
-        this.scene.add( sphere );
-        this.clickObjects.push(sphere);
-
+        const geometry = new THREE.SphereGeometry(SPHERE_SIZE, 32, 32);
+        const material = new THREE.MeshBasicMaterial( {color: 0xFFFF00, transparent:true, opacity:0.5} );
+        const sphere = new THREE.Mesh(geometry, material);
+        sphere.annotation = true;
+        this.scene.add(sphere);
+        this.annotations.push(sphere);
         sphere.position.x = X;
         sphere.position.y = Y;
         sphere.position.z = Z;
     }
-    
 }
 
 
@@ -396,10 +371,25 @@ function getElementPosition() {
 function getEventLocation(event){
     // Relies on the getElementPosition function.
     var pos = this.getElementPosition();
-    
     return {
         x: (event.pageX - pos.x),
         y: (event.pageY - pos.y)
+    };
+}
+
+function getCanvasRelativePosition(canvas, event) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: (event.clientX - rect.left) * canvas.width  / rect.width,
+      y: (event.clientY - rect.top ) * canvas.height / rect.height,
+    };
+  }
+   
+function getRayPickPosition(canvas, event) {
+    const pos = getCanvasRelativePosition(canvas, event);
+    return {
+        x: (pos.x / canvas.width ) *  2 - 1,
+        y: (pos.y / canvas.height) * -2 + 1
     };
 }
 
