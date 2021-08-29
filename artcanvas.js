@@ -43,12 +43,19 @@ class ArtCanvas {
         this.blue = 0;
         this.alpha = 0;
         this.spot = [0,0,0];
+
+        // Setup annotations area
         this.annotations = [];
-        this.pickingNew = true; // Whether we're able to pick new areas 
+        this.pickingNew = false; // Whether we're able to pick new areas 
+        this.pickedSphere = null;
         if ('pickingNew' in params) {
             this.pickingNew = params['pickingNew'];
         }
+        this.annoTextBox = document.getElementById("annoTextBox");
+        this.annoTextBox.addEventListener("input", this.handleTyping.bind(this));
+        this.handleTyping();
 
+        // Setup scene
         let scene = new THREE.Scene();
         scene.background = new THREE.Color('gray');
         this.canvas = canvas;
@@ -71,7 +78,7 @@ class ArtCanvas {
         this.pickHelper = new PickHelper(scene, camera);
 
         // renderer
-        let renderer = new THREE.WebGLRenderer( {canvas} ); // antiailiasing is off by default. https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer
+        let renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true}); 
         renderer.setSize(canvas.clientWidth, canvas.clientHeight, false); 
         this.renderer = renderer;
 
@@ -125,7 +132,7 @@ class ArtCanvas {
                 let pos = getRayPickPosition(canvas, event);
                 that.handleAnnotationPick(pos);
             }
-        }, false);
+        });
 
         // right click
         canvas.addEventListener("contextmenu", function(event){
@@ -145,9 +152,72 @@ class ArtCanvas {
 
     }
 
+    /**
+     * Do picking of an annotation sphere
+     * @param {object} pos Position of click, in canvas coordinates
+     */
     handleAnnotationPick(pos) {
-        let picked = this.pickHelper.pick(pos);
+        let pickedSphere = this.pickHelper.pick(pos);
+        if (!(pickedSphere === null)) {
+            this.pickedSphere = pickedSphere;
+            this.annoTextBox.value = pickedSphere.text;
+        }
     }
+
+    /**
+     * React to typing in the textbox.  This is really only relevant for Katie when editing
+     * is enabled; otherwise, we keep just putting back what the annotation was
+     */
+    handleTyping() {
+        if (this.pickedSphere === null) {
+            if (this.pickingNew) {
+                this.annoTextBox.value = "CTRL+Click to pick a new location on the smokestack and then type information here.\n\nDo a regular click to re-select a previously selected location to edit it.";
+            }
+            else {
+                this.annoTextBox.value = "Pick a location on the smokestack and information about that location will show up here";
+            }
+        }
+        else {
+            // Katie's edits are updating
+            this.pickedSphere.text = this.annoTextBox.value;
+        }
+    }
+
+    /**
+     * Save the annotation progress as a JSON file
+     */
+    saveAnnotations() {
+        let data = [];
+        for (let i = 0; i < this.annotations.length; i++) {
+            const pos = this.annotations[i].position;
+            data.push({x:pos.x, y:pos.y, z:pos.z, text:this.annotations[i].text});
+        }
+        data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+        const dlAnnoElem = document.getElementById('downloadAnnoElem');
+        dlAnnoElem.setAttribute("href", data);
+        dlAnnoElem.setAttribute("download", "annotations.json");
+        dlAnnoElem.click();
+    }
+
+    /**
+     * Load in a list of annotations
+     * @param {list} data List of {x, y, z, text} annotations
+     */
+    loadAnnotations(data) {
+        for (let i = 0; i < data.length; i++) {
+            const geometry = new THREE.SphereGeometry(SPHERE_SIZE, 32, 32);
+            const material = new THREE.MeshBasicMaterial( {color:UNSELECTED_COLOR, transparent:true, opacity:0.5} );
+            const sphere = new THREE.Mesh(geometry, material);
+            sphere.annotation = true;
+            this.scene.add(sphere);
+            this.annotations.push(sphere);
+            sphere.position.x = data[i].x;
+            sphere.position.y = data[i].y;
+            sphere.position.z = data[i].z;
+            sphere.text = data[i].text;
+        }
+    }
+
 
     /**
      * Load in a copy of the mesh that uses the picker shader
@@ -213,16 +283,9 @@ class ArtCanvas {
                 requestAnimationFrame(canvas.render.bind(canvas));
             });
         });
-
-        
     }
 
     resizeCanvas(){
-        /*
-        let canvas = document.getElementById("threecanvas");
-        const gl = canvas.getContext('webgl');
-        this.gl = gl;
-        */
        let wide = window.innerWidth * 0.7;
        let high = window.innerHeight * 0.95;
        this.gl.canvas.width = wide;
@@ -340,14 +403,19 @@ class ArtCanvas {
 
     addSphere(X, Y, Z){
         const geometry = new THREE.SphereGeometry(SPHERE_SIZE, 32, 32);
-        const material = new THREE.MeshBasicMaterial( {color: 0xFFFF00, transparent:true, opacity:0.5} );
+        const material = new THREE.MeshBasicMaterial( {transparent:true, opacity:0.5} );
         const sphere = new THREE.Mesh(geometry, material);
+        this.pickHelper.selectNew(sphere);
         sphere.annotation = true;
         this.scene.add(sphere);
         this.annotations.push(sphere);
+        this.pickedSphere = sphere;
         sphere.position.x = X;
         sphere.position.y = Y;
         sphere.position.z = Z;
+        sphere.text = "";
+        this.annoTextBox.value = "Type new description here";
+        this.handleTyping();
     }
 }
 

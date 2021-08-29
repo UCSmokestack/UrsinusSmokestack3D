@@ -42,13 +42,17 @@
         </div>
         <div id="textarea">
             <h3>Annotation</h3>
-            <textarea id="w3review" name="w3review" rows="10" cols="40">
-                Annotation text goes here
-            </textarea>
-            <a href = "http://www.ctralie.com">Chris Tralie</a>
+                <textarea id="annoTextBox" name="annotext" rows="10" cols="40">
+                </textarea>
+            <HR>
+                <button id = "download" onclick="saveAnnotations()">Save Annotations</button>
+                <a id="downloadAnnoElem" style="display:none"></a>
+            <HR>
+                <h3>Load Annotations</h3>
+                <input type = "file" id = "annoInput">
         </div>
 
-        <script type="text/javascript" src="main.js"></script>
+        <script type="text/javascript" src="katiemain.js"></script>
 
 
     </body>
