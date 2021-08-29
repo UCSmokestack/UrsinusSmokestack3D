@@ -225,8 +225,8 @@ class ArtCanvas {
      */
     loadMeshPickerTexture(filename) {
         let canvas = this;
-        $.get("../shaders/XYZ.vert", function(vertexSrc) {
-            $.get("../shaders/XYZ.frag", function(fragmentSrc) {
+        $.get("shaders/XYZ.vert", function(vertexSrc) {
+            $.get("shaders/XYZ.frag", function(fragmentSrc) {
                 // custom material
                 let mat = new THREE.ShaderMaterial({
                     uniforms:{coord_choice:{value:2.0}},
