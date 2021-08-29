@@ -39,54 +39,37 @@
 
         <script type="text/javascript" src="jsmodules/jquery-3.5.1.min.js"></script>
         <script type="text/javascript" src="artcanvas.js"></script>
+        <script type="text/javascript" src="progressbar.js"></script>
 
+        <h3>
+            <p id="pagestatus"></p>
+        </h3>
         <table>
-            <table>
-                <tr>
-                    <td>
-                        <canvas id="threecanvas" width="1200" height="900"></canvas>
-                    </td>
-                    <td>
-                        <table>
-                            <tr>
-                                <td><button type="button" onclick=toggleTexture()>Toggle Texture</button> </td>
-                            </tr>
-                            <tr>
-                                <td><button type="button" onclick=toggleX()>X</button> </td>
-                            </tr>
-                            <tr>
-                                <td><button type="button" onclick=toggleY()>Y</button> </td>
-                            </tr>
-                            <tr>
-                                <td><button type="button" onclick=toggleZ()>Z</button> </td>
-                            </tr>
-                        </table>
-                        
-                    </td>
-                </tr>
-            </table>
-            
+            <tr>
+                <td>
+                    <canvas id="threecanvas" width="1200" height="900"></canvas>
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td><button type="button" onclick=toggleTexture()>Toggle Texture</button> </td>
+                        </tr>
+                        <tr>
+                            <td><button type="button" onclick=toggleX()>X</button> </td>
+                        </tr>
+                        <tr>
+                            <td><button type="button" onclick=toggleY()>Y</button> </td>
+                        </tr>
+                        <tr>
+                            <td><button type="button" onclick=toggleZ()>Z</button> </td>
+                        </tr>
+                    </table>
+                    
+                </td>
+            </tr>
         </table>
 
-        <!-- my stuff -->
-        <script>
-            let filename = 'models/Final/medres.obj';
-            let matname = 'models/Final/medres.mtl';
-            let canvas = new ArtCanvas(3, [0, -0.2, -0.1]);
-            canvas.loadMesh(filename, matname);
-            function toggleTexture() {
-                canvas.toggleTexture();
-            }
-            function toggleX() {
-                canvas.toggleX();
-            }
-            function toggleY() {
-                canvas.toggleY();
-            }
-            function toggleZ() {
-                canvas.toggleZ();
-            }
-        </script>
+        <script type="text/javascript" src="main.js"></script>
 
 
     </body>

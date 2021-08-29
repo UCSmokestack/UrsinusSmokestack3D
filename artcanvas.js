@@ -190,10 +190,19 @@ class ArtCanvas {
      * @param {string} matfilename Path to the material file
      */
     loadMesh(filename, matfilename) {
-        let canvas = this;
+        const manager = new THREE.LoadingManager();
+        progressBar.startLoading("Loading smokestack model");
+        manager.onProgress = function(item, loaded, total) {
+            let perc = Math.round(100*loaded/total);
+            progressBar.changeMessage("Loading smokestack model, " + perc + "% completed");
+            if (loaded == total) {
+                progressBar.changeToReady("");
+            }
+        }
+        const canvas = this;
         // Step 1: Asynchronously load material with texture
-        const mtlLoader = new MTLLoader();
-        const objLoader = new OBJLoader();
+        const mtlLoader = new MTLLoader(manager);
+        const objLoader = new OBJLoader(manager);
         
         mtlLoader.load(matfilename, (mtl) => {
             mtl.preload();
