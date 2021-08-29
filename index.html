@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css" />
+        <meta charset="utf-8" />
+    </head>
+
+    <body>
+        
+
+        <!-- startup three.js -->
+        <script src="jsmodules/three.js"></script>
+        <script src="jsmodules/three.min.js"></script>
+        <script src="jsmodules/three.module.js"></script>
+        
+        <!-- load models and look at them-->
+        <script src="jsmodules/OBJLoader.js"></script>
+        <script src="jsmodules/MTLLoader.js"></script>
+        <script src="jsmodules/OrbitControls.js"></script>
+
+        <!-- postprocessing -->
+        <script src="jsmodules/CopyShader.js"></script>
+        <script src="jsmodules/Pass.js"></script>
+        <script src="jsmodules/ShaderPass.js"></script>
+        <script src="jsmodules/MaskPass.js"></script>
+
+        <script src="jsmodules/EffectComposer.js"></script>
+        <script src="jsmodules/RenderPass.js"></script>
+        <script src="jsmodules/DigitalGlitch.js"></script>
+        <script src="jsmodules/GlitchPass.js"></script>
+
+        <script type="text/javascript" src="jsmodules/jquery-3.5.1.min.js"></script>
+        <script type="text/javascript" src="artcanvas.js"></script>
+        <script type="text/javascript" src="progressbar.js"></script>
+        <script type="text/javascript" src="pickhelper.js"></script>
+
+        <div id="canvasarea">
+            <h3>
+                <p id="pagestatus"></p>
+            </h3>
+            <canvas id="threecanvas"></canvas>
+        </div>
+        <div id="textarea">
+            <h3>Annotation</h3>
+                <textarea id="annoTextBox" name="annotext" rows="10" cols="40">
+                </textarea>
+        </div>
+
+        <script type="text/javascript" src="main.js"></script>
+
+
+    </body>
+
+</html>
