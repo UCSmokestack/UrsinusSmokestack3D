@@ -226,7 +226,7 @@ class ArtCanvas {
         this.gl = gl;
         */
        let wide = window.innerWidth * 0.7;
-       let high = window.innerHeight;
+       let high = window.innerHeight * 0.95;
        this.gl.canvas.width = wide;
        this.gl.canvas.height = high;
        this.renderer.setSize(wide, high, false);
@@ -362,8 +362,8 @@ class ArtCanvas {
     }
 
     addSphere(X, Y, Z){
-        const geometry = new THREE.SphereGeometry( 0.2, 32, 32 );
-        const material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+        const geometry = new THREE.SphereGeometry( 0.02, 32, 32 );
+        const material = new THREE.MeshBasicMaterial( {color: 0xffff00, transparent:true, opacity:0.5} );
         const sphere = new THREE.Mesh( geometry, material );
         
         this.scene.add( sphere );
@@ -372,8 +372,6 @@ class ArtCanvas {
         sphere.position.x = X;
         sphere.position.y = Y;
         sphere.position.z = Z;
-
-        console.log("sphere added: [" + sphere.position.x + ", " + sphere.position.y + ", " + sphere.position.z + "]");
     }
     
 }
