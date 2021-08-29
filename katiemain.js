@@ -11,6 +11,10 @@ function saveAnnotations() {
     canvas.saveAnnotations();
 }
 
+function deleteAnnotation() {
+    canvas.deleteSelected();
+}
+
 let annoInput = document.getElementById('annoInput');
 annoInput.addEventListener('change', function(e) {
     let reader = new FileReader();

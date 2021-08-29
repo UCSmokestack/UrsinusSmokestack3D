@@ -44,11 +44,12 @@
             <h3>Annotation</h3>
                 <textarea id="annoTextBox" name="annotext" rows="10" cols="40">
                 </textarea>
+                <button id = "delete" onclick="deleteAnnotation()">Delete Selected Annotation</button>
             <HR>
-                <button id = "download" onclick="saveAnnotations()">Save Annotations</button>
+                <button id = "download" onclick="saveAnnotations()">Save All Annotations</button>
                 <a id="downloadAnnoElem" style="display:none"></a>
             <HR>
-                <h3>Load Annotations</h3>
+                <h3>Load Annotations from File</h3>
                 <input type = "file" id = "annoInput">
         </div>
 

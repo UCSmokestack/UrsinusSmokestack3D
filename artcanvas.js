@@ -137,9 +137,9 @@ class ArtCanvas {
         // right click
         canvas.addEventListener("contextmenu", function(event){
             if(cntrlIsPressed == true){
-                let item = annotations.pop();
+                let item = that.annotations.pop();
                 if(typeof item !== 'undefined'){
-                    scene.remove(item);
+                    that.scene.remove(item);
                     item.geometry.dispose();
                     item.material.dispose();
                     item = undefined;
@@ -416,6 +416,17 @@ class ArtCanvas {
         sphere.text = "";
         this.annoTextBox.value = "Type new description here";
         this.handleTyping();
+    }
+
+    deleteSelected() {
+        if (!(this.pickedSphere === null)) {
+            const item = this.pickedSphere;
+            this.pickedSphere = null;
+            this.handleTyping();
+            this.scene.remove(item);
+            item.geometry.dispose();
+            item.material.dispose();
+        }
     }
 }
 
