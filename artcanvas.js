@@ -171,7 +171,7 @@ class ArtCanvas {
     handleTyping() {
         if (this.pickedSphere === null) {
             if (this.pickingNew) {
-                this.annoTextBox.value = "CTRL+Click to pick a new location on the smokestack and then type information here.\n\nDo a regular click to re-select a previously selected location to edit it.";
+                this.annoTextBox.value = "CTRL+Click to pick a new location on the smokestack and then type information here.\n\nDo a regular click to re-select a previously selected location to edit it.\n\nDon't forget to save your progress!  (You can load it back later)";
             }
             else {
                 this.annoTextBox.value = "Pick a location on the smokestack and information about that location will show up here";
