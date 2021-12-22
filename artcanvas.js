@@ -10,24 +10,6 @@
 
 const SPHERE_SIZE = 0.02;
 
-function centerOnBBox(object, objoff) {
-    if (objoff === undefined) {
-        objoff = [0, 0, 0];
-    }
-    // bounding box
-    let box = new THREE.Box3().setFromObject(object);
-    // dimensions of the bounding box
-    let dimensions = new THREE.Vector3();
-    box.getSize(dimensions);
-    // center the model
-    let boxCenter = box.getCenter(new THREE.Vector3());
-    object.position.x += boxCenter.x+objoff[0];
-    object.position.y += boxCenter.y+objoff[1];
-    object.position.z += boxCenter.z+objoff[2];
-    // set model upright
-    object.rotation.x += 3.14;
-}
-
 // center the model
 // fix github
 class ArtCanvas {
@@ -242,7 +224,6 @@ class ArtCanvas {
                         }
                     });
                     canvas.pickerMesh = object;
-                    centerOnBBox(object, canvas.objoff);
                     canvas.scene.add(object);
                     canvas.updateVisibility();
                     requestAnimationFrame(canvas.render.bind(canvas));
@@ -277,7 +258,6 @@ class ArtCanvas {
             objLoader.setMaterials(mtl);
             objLoader.load(filename, function(object) {       
                 canvas.textureMesh = object;
-                centerOnBBox(object, canvas.objoff);
                 canvas.scene.add(object);
                 canvas.loadMeshPickerTexture(filename);
                 requestAnimationFrame(canvas.render.bind(canvas));
