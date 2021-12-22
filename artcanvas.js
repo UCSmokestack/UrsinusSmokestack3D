@@ -60,7 +60,7 @@ class ArtCanvas {
         this.pickHelper = new PickHelper(scene, camera);
 
         // renderer
-        let renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true}); 
+        let renderer = new THREE.WebGLRenderer({canvas:canvas}); 
         renderer.setSize(canvas.clientWidth, canvas.clientHeight, false); 
         this.renderer = renderer;
 
@@ -74,6 +74,10 @@ class ArtCanvas {
         controls.enableDamping = true;
         controls.campingFactor = 0.25;
         controls.enableZoom = true;
+        controls.addEventListener("change", function() {
+            controls.target.x = 0;
+            controls.target.z = 0;
+        });
         this.controls = controls;
 
         // Setup placeholders for two meshes and picking material
