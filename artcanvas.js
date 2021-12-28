@@ -91,23 +91,30 @@ class ArtCanvas {
         this.eventLocation = null;
         this.toggleCount = 0;
         let cntrlIsPressed = false;
+        let aIsPressed = false;
 
         // control key
         document.addEventListener("keydown", function(event) {
             if (event.code == "ControlLeft") {
                 cntrlIsPressed = true;
             }
+            else if (event.code == "KeyA") {
+                aIsPressed = true;
+            }
         });
         document.addEventListener("keyup", function(event) {
             if (event.code == "ControlLeft") {
                 cntrlIsPressed = false;
+            }
+            else if (event.code == "KeyA") {
+                aIsPressed = false;
             }
         });
 
         // left click
         canvas.addEventListener("click", function(event){
             that.eventLocation = getEventLocation(event);
-            if(cntrlIsPressed == true && that.pickingNew){
+            if((cntrlIsPressed || aIsPressed) && that.pickingNew) {
                 // Making new annotation
                 scene.background = new THREE.Color('white');
                 that.selectingSphere = true;
@@ -157,7 +164,7 @@ class ArtCanvas {
     handleTyping() {
         if (this.pickedSphere === null) {
             if (this.pickingNew) {
-                this.annoTextBox.value = "CTRL+Click to pick a new location on the smokestack and then type information here.\n\nDo a regular click to re-select a previously selected location to edit it.\n\nDon't forget to save your progress!  (You can load it back later)";
+                this.annoTextBox.value = "CTRL+Click (or a+click) to pick a new location on the smokestack and then type information here.\n\nDo a regular click to re-select a previously selected location to edit it.\n\nDon't forget to save your progress!  (You can load it back later)";
             }
             else {
                 this.annoTextBox.value = "Pick a location on the smokestack and information about that location will show up here";
