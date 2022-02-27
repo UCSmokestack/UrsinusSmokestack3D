@@ -92,20 +92,32 @@ class ArtCanvas {
         this.toggleCount = 0;
         let cntrlIsPressed = false;
         let aIsPressed = false;
-
-        // control key
+        this.traceMode = false;
+        
+        // key pressed
         document.addEventListener("keydown", function(event) {
+            // control
             if (event.code == "ControlLeft") {
                 cntrlIsPressed = true;
             }
+            // A
             else if (event.code == "KeyA") {
                 aIsPressed = true;
             }
+            // Z key
+            else if (event.code == "KeyZ"){
+                controls.enabled = !controls.enabled; // lock and unlock the orbit controls whenever z is pressed
+                that.traceMode = !controls.enabled;
+                console.log("traceMode: " + that.traceMode);
+            }
         });
+        // key released
         document.addEventListener("keyup", function(event) {
+            // control
             if (event.code == "ControlLeft") {
                 cntrlIsPressed = false;
             }
+            // A
             else if (event.code == "KeyA") {
                 aIsPressed = false;
             }
