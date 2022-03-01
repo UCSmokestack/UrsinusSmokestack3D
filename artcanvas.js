@@ -6,7 +6,8 @@
 // https://www.howtobuildsoftware.com/index.php/how-do/b2Qd/javascript-threejs-how-to-access-the-vertices-after-loading-object-with-objloader-in-threejs
 // ray caster
 // https://threejs.org/docs/index.html?q=ray#api/en/core/Raycaster 
-
+// https://www.w3schools.com/htmL/html_images_imagemap.asp
+// https://stackoverflow.com/questions/2368784/draw-on-html5-canvas-using-a-mouse
 
 const SPHERE_SIZE = 0.02;
 
@@ -25,6 +26,7 @@ class ArtCanvas {
         this.blue = 0;
         this.alpha = 0;
         this.spot = [0,0,0];
+        // make array for keeping track of mouse position
 
         // Setup annotations area
         this.annotations = [];
@@ -93,6 +95,8 @@ class ArtCanvas {
         let cntrlIsPressed = false;
         let aIsPressed = false;
         this.traceMode = false;
+        this.shiftPressed = false;
+        this.mousePressed = false;
         
         // key pressed
         document.addEventListener("keydown", function(event) {
@@ -105,12 +109,15 @@ class ArtCanvas {
                 aIsPressed = true;
             }
             // Z key
-            else if (event.code == "KeyZ"){
+            if (event.code == "KeyZ") {
                 controls.enabled = !controls.enabled; // lock and unlock the orbit controls whenever z is pressed
-                that.traceMode = !controls.enabled;
-                console.log("traceMode: " + that.traceMode);
+                that.traceMode = !controls.enabled; // activate traceMode
+            }
+            if (event.key == "Shift") {
+                that.shiftPressed = true;
             }
         });
+
         // key released
         document.addEventListener("keyup", function(event) {
             // control
@@ -121,16 +128,35 @@ class ArtCanvas {
             else if (event.code == "KeyA") {
                 aIsPressed = false;
             }
+            if (event.key == "Shift"){
+                that.shiftPressed = false;
+            }
         });
+
+        // mouse movements
+        that.canvas.addEventListener("mousemove", function(event){
+            console.log("the mouse moved");
+            // if dragging then start recording mouse coordinates
+        }, false);
+
+        // mouse out
+        that.canvas.addEventListener("mouseout", function(event){
+            console.log("mouse out");
+        }, false);
+
 
         // left click
         canvas.addEventListener("click", function(event){
+            // check if shift is pressed then activate dragging
             that.eventLocation = getEventLocation(event);
             if((cntrlIsPressed || aIsPressed) && that.pickingNew) {
                 // Making new annotation
                 scene.background = new THREE.Color('white');
                 that.selectingSphere = true;
                 that.toggleX();
+            }
+            else if (that.traceMode && that.shiftPressed){
+                that.traceCurve(that.eventLocation);
             }
             else {
                 // Pick ordinary sphere
@@ -156,6 +182,26 @@ class ArtCanvas {
         window.addEventListener('resize', () => {this.resizeCanvas()}, false);
 
     }
+
+    /*
+    method traceCurve(beginingX, beginingY){
+
+        curvePoints = [{beginingX, BeginingY}];
+        previousPoint = []; // previous point can actually be the last point in curvePoints
+
+        while(traceMode and shiftPressed and leftMousePressed){
+            - change the color of the pixels on the canves that are near the mouse to yellow
+            - if the mouse moves
+                - get the distance from previousPoint to the current possition
+                - if the distance is more than 3 pixels
+                    - add the possition to curve points
+        }
+
+        convert curve points to an array of 3D Coordinates
+        return that array
+    }
+
+    */
 
     /**
      * Do picking of an annotation sphere
