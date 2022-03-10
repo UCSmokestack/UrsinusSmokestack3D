@@ -8,11 +8,13 @@
 // https://threejs.org/docs/index.html?q=ray#api/en/core/Raycaster 
 // https://www.w3schools.com/htmL/html_images_imagemap.asp
 // https://stackoverflow.com/questions/2368784/draw-on-html5-canvas-using-a-mouse
+// https://www.tutorialspoint.com/webgl/webgl_drawing_a_model.htm
+// https://www.tutorialspoint.com/webgl/webgl_modes_of_drawing.htm
 
 const SPHERE_SIZE = 0.02;
+const SMALL_SPHERE_SIZE = 0.005;
 
-// center the model
-// fix github
+
 class ArtCanvas {
     constructor(params) {
         const that = this;
@@ -26,7 +28,6 @@ class ArtCanvas {
         this.blue = 0;
         this.alpha = 0;
         this.spot = [0,0,0];
-        // make array for keeping track of mouse position
 
         // Setup annotations area
         this.annotations = [];
@@ -94,9 +95,12 @@ class ArtCanvas {
         this.toggleCount = 0;
         let cntrlIsPressed = false;
         let aIsPressed = false;
-        this.traceMode = false;
         this.shiftPressed = false;
         this.mousePressed = false;
+        this.dragging = false;
+        this.mousePositions = [];
+        this.dragging_spheres = 0;
+        this.mouseMoveCount = 0;
         
         // key pressed
         document.addEventListener("keydown", function(event) {
@@ -111,7 +115,6 @@ class ArtCanvas {
             // Z key
             if (event.code == "KeyZ") {
                 controls.enabled = !controls.enabled; // lock and unlock the orbit controls whenever z is pressed
-                that.traceMode = !controls.enabled; // activate traceMode
             }
             if (event.key == "Shift") {
                 that.shiftPressed = true;
@@ -128,20 +131,49 @@ class ArtCanvas {
             else if (event.code == "KeyA") {
                 aIsPressed = false;
             }
+            // shift
             if (event.key == "Shift"){
                 that.shiftPressed = false;
+                that.dragging = false;
+                // delete spheres that were added while dragging
+                for(let i = 0; i < that.dragging_spheres; i++){
+                    that.deleteSphere();
+                }
+                that.dragging_spheres = 0;
+
+
             }
         });
 
         // mouse movements
         that.canvas.addEventListener("mousemove", function(event){
-            console.log("the mouse moved");
+            that.mouseMoveCount += 1;
+
             // if dragging then start recording mouse coordinates
+            if (that.dragging){
+                // get the new mouse position
+                let pos = getEventLocation(event);
+                // append postion to the array of mouse positions
+                that.mousePositions.push(pos);
+
+                if(that.mouseMoveCount % 10 == 0){
+                    that.eventLocation = pos;
+                    // insert a new sphere
+                    scene.background = new THREE.Color('white');
+                    that.selectingSphere = true;
+                    that.toggleX();
+                    // increment count of dragging sphere
+                    that.dragging_spheres += 1;
+                }
+                
+                // update dragging
+                that.dragging == !controls.enabled && that.shiftPressed;
+            }
         }, false);
 
         // mouse out
         that.canvas.addEventListener("mouseout", function(event){
-            console.log("mouse out");
+            that.dragging = false;
         }, false);
 
 
@@ -155,8 +187,11 @@ class ArtCanvas {
                 that.selectingSphere = true;
                 that.toggleX();
             }
-            else if (that.traceMode && that.shiftPressed){
-                that.traceCurve(that.eventLocation);
+            else if (controls.enabled == false && that.shiftPressed){
+                // clear the previous anotation points
+                // then start the next line being drawn
+                that.mousePositions = [];
+                that.dragging = true;
             }
             else {
                 // Pick ordinary sphere
@@ -168,13 +203,7 @@ class ArtCanvas {
         // right click
         canvas.addEventListener("contextmenu", function(event){
             if(cntrlIsPressed == true){
-                let item = that.annotations.pop();
-                if(typeof item !== 'undefined'){
-                    that.scene.remove(item);
-                    item.geometry.dispose();
-                    item.material.dispose();
-                    item = undefined;
-                }
+                that.deleteSphere();
             }
         },false);
 
@@ -183,25 +212,15 @@ class ArtCanvas {
 
     }
 
-    /*
-    method traceCurve(beginingX, beginingY){
-
-        curvePoints = [{beginingX, BeginingY}];
-        previousPoint = []; // previous point can actually be the last point in curvePoints
-
-        while(traceMode and shiftPressed and leftMousePressed){
-            - change the color of the pixels on the canves that are near the mouse to yellow
-            - if the mouse moves
-                - get the distance from previousPoint to the current possition
-                - if the distance is more than 3 pixels
-                    - add the possition to curve points
+    deleteSphere() {
+        let item = this.annotations.pop();
+        if(typeof item !== 'undefined'){
+            this.scene.remove(item);
+            item.geometry.dispose();
+            item.material.dispose();
+            item = undefined;
         }
-
-        convert curve points to an array of 3D Coordinates
-        return that array
     }
-
-    */
 
     /**
      * Do picking of an annotation sphere
@@ -255,8 +274,12 @@ class ArtCanvas {
      * @param {list} data List of {x, y, z, text} annotations
      */
     loadAnnotations(data) {
+        let radius = SPHERE_SIZE;
         for (let i = 0; i < data.length; i++) {
-            const geometry = new THREE.SphereGeometry(SPHERE_SIZE, 32, 32);
+            if (this.dragging){
+                radius = SMALL_SPHERE_SIZE;
+            }
+            const geometry = new THREE.SphereGeometry(radius, 32, 32);
             const material = new THREE.MeshBasicMaterial( {color:UNSELECTED_COLOR, transparent:true, opacity:0.5} );
             const sphere = new THREE.Mesh(geometry, material);
             sphere.annotation = true;
@@ -451,7 +474,11 @@ class ArtCanvas {
     }
 
     addSphere(X, Y, Z){
-        const geometry = new THREE.SphereGeometry(SPHERE_SIZE, 32, 32);
+        let radius = SPHERE_SIZE;
+        if (this.dragging){
+            radius = SMALL_SPHERE_SIZE;
+        }
+        const geometry = new THREE.SphereGeometry(radius, 32, 32);
         const material = new THREE.MeshBasicMaterial( {transparent:true, opacity:0.5} );
         const sphere = new THREE.Mesh(geometry, material);
         this.pickHelper.selectNew(sphere);
@@ -466,20 +493,7 @@ class ArtCanvas {
         this.annoTextBox.value = "Type new description here";
         this.handleTyping();
     }
-
-    deleteSelected() {
-        if (!(this.pickedSphere === null)) {
-            const item = this.pickedSphere;
-            this.pickedSphere = null;
-            this.handleTyping();
-            this.scene.remove(item);
-            item.geometry.dispose();
-            item.material.dispose();
-        }
-    }
 }
-
-
 
 // location of the canvas
 function getElementPosition() {
