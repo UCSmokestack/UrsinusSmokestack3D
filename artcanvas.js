@@ -135,13 +135,13 @@ class ArtCanvas {
             if (event.key == "Shift"){
                 that.shiftPressed = false;
                 that.dragging = false;
+                /* no need for this
                 // delete spheres that were added while dragging
                 for(let i = 0; i < that.dragging_spheres; i++){
                     that.deleteSphere();
                 }
                 that.dragging_spheres = 0;
-
-
+                */
             }
         });
 
