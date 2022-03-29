@@ -169,9 +169,7 @@ class ArtCanvas {
             that.dragging = false;
         }, false);
 
-
-        // left click
-        canvas.addEventListener("click", function(event){
+        function clickPressed(event){
             // check if shift is pressed then activate dragging
             that.eventLocation = getEventLocation(event);
             if((cntrlIsPressed || aIsPressed) && that.pickingNew) {
@@ -191,7 +189,11 @@ class ArtCanvas {
                 let pos = getRayPickPosition(canvas, event);
                 that.handleAnnotationPick(pos);
             }
-        });
+        }
+
+        // left click
+        canvas.addEventListener("click", clickPressed);
+        canvas.addEventListener("touchstart", clickPressed);
 
         // right click
         canvas.addEventListener("contextmenu", function(event){
