@@ -32,12 +32,10 @@ $.getJSON( "allAnnotations.json", function(data) {
         x /= data[i].length;
         y /= data[i].length;
         z /= data[i].length;
-        let anno = {};
+        let anno = allAnnotations[i];
         anno.x = x;
         anno.y = y;
         anno.z = z;
-        anno.text = data[i][data[i].length-1].text;
-        allAnnotations.push(anno);
     }
     canvas.loadAnnotations(allAnnotations);
 });
