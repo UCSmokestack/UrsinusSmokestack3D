@@ -174,6 +174,14 @@ class ArtCanvas {
         function clickPressed(event){
             // check if shift is pressed then activate dragging
             that.eventLocation = getEventLocation(event);
+
+            if(event.type == "touchstart"){
+                var pos = getElementPosition();
+
+                that.eventLocation = {x: (event.touches[0].clientX - pos.x),
+                    y: (event.touches[0].clientY - pos.y)};
+            }
+
             if((cntrlIsPressed || aIsPressed) && that.pickingNew) {
                 // Making new annotation
                 scene.background = new THREE.Color('white');
@@ -229,7 +237,7 @@ class ArtCanvas {
             this.pickedSphere = pickedSphere;
             this.annoTextBox.value = pickedSphere.text;
             if(this.paperNote != null){
-                this.paperNote.src = "/paperNotes/" + pickedSphere.text;
+                this.paperNote.src = "paperNotes/" + pickedSphere.text;
             }
         }
     }
