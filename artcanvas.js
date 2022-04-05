@@ -40,6 +40,8 @@ class ArtCanvas {
         this.annoTextBox.addEventListener("input", this.handleTyping.bind(this));
         this.handleTyping();
 
+        this.paperNote = document.getElementById("paperNote");
+
         // Setup scene
         let scene = new THREE.Scene();
         scene.background = new THREE.Color('gray');
@@ -226,6 +228,9 @@ class ArtCanvas {
         if (!(pickedSphere === null)) {
             this.pickedSphere = pickedSphere;
             this.annoTextBox.value = pickedSphere.text;
+            if(this.paperNote != null){
+                this.paperNote.src = "/paperNotes/" + pickedSphere.text;
+            }
         }
     }
 
