@@ -10,10 +10,10 @@
 // https://stackoverflow.com/questions/2368784/draw-on-html5-canvas-using-a-mouse
 // https://www.tutorialspoint.com/webgl/webgl_drawing_a_model.htm
 // https://www.tutorialspoint.com/webgl/webgl_modes_of_drawing.htm
+// https://stackoverflow.com/questions/14479435/get-touchstart-coordinate-on-current-element
 
 const SPHERE_SIZE = 0.02;
 const SMALL_SPHERE_SIZE = 0.005;
-
 
 class ArtCanvas {
     constructor(params) {
@@ -175,11 +175,9 @@ class ArtCanvas {
             // check if shift is pressed then activate dragging
             that.eventLocation = getEventLocation(event);
 
+            // if using a touch screen
             if(event.type == "touchstart"){
-                var pos = getElementPosition();
-
-                that.eventLocation = {x: (event.touches[0].clientX - pos.x),
-                    y: (event.touches[0].clientY - pos.y)};
+                that.eventLocation = getMobleEventLocation(event);
             }
 
             if((cntrlIsPressed || aIsPressed) && that.pickingNew) {
@@ -196,7 +194,12 @@ class ArtCanvas {
             }
             else {
                 // Pick ordinary sphere
-                let pos = getRayPickPosition(canvas, event);
+                let pos = getRayPickPosition(canvas, event); // fix touch events
+
+                if(event.type == "touchstart"){
+                    pos = getMobleRayPickPosition(canvas, event);
+                }
+
                 that.handleAnnotationPick(pos);
             }
         }
@@ -527,16 +530,49 @@ function getEventLocation(event){
     };
 }
 
+function getMobleEventLocation(event){
+    var pos = this.getElementPosition();
+    console.log("threecanvas position: [" + pos.x + ", " + pos.y + "]");
+
+    let contactPoint = {
+        x: event.touches[0].clientX - pos.x, 
+        y: event.touches[0].clientY - pos.y
+    };
+
+    console.log("contactPoint: [" + contactPoint.x + ", " + contactPoint.y + "]");
+    console.log("target: " + event.target);
+
+    return contactPoint;
+}
+
+// fix for mobile
 function getCanvasRelativePosition(canvas, event) {
     const rect = canvas.getBoundingClientRect();
     return {
       x: (event.clientX - rect.left) * canvas.width  / rect.width,
       y: (event.clientY - rect.top ) * canvas.height / rect.height,
     };
-  }
+}
+
+function getMobleCanvasRelativePosition(canvas, event){
+    const rect = canvas.getBoundingClientRect();
+    return {
+        x: (event.touches[0].clientX - rect.left) * canvas.width  / rect.width,
+        y: (event.touches[0].clientY - rect.top ) * canvas.height / rect.height,
+    }
+}
    
+// fix for mobile
 function getRayPickPosition(canvas, event) {
     const pos = getCanvasRelativePosition(canvas, event);
+    return {
+        x: (pos.x / canvas.width ) *  2 - 1,
+        y: (pos.y / canvas.height) * -2 + 1
+    };
+}
+
+function getMobleRayPickPosition(canvas, event){
+    const pos = getMobleCanvasRelativePosition(canvas, event);
     return {
         x: (pos.x / canvas.width ) *  2 - 1,
         y: (pos.y / canvas.height) * -2 + 1
