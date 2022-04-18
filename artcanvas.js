@@ -238,7 +238,7 @@ class ArtCanvas {
         let pickedSphere = this.pickHelper.pick(pos);
         if (!(pickedSphere === null)) {
             this.pickedSphere = pickedSphere;
-            this.annoTextBox.value = pickedSphere.text;
+            //this.annoTextBox.value = pickedSphere.text;
             if(this.paperNote != null){
                 this.paperNote.src = "paperNotes/" + pickedSphere.text;
             }
@@ -255,7 +255,7 @@ class ArtCanvas {
                 this.annoTextBox.value = "CTRL+Click (or a+click) to pick a new location on the smokestack and then type information here.\n\nDo a regular click to re-select a previously selected location to edit it.\n\nDon't forget to save your progress!  (You can load it back later)";
             }
             else {
-                this.annoTextBox.value = "Pick a location on the smokestack and information about that location will show up here";
+                this.annoTextBox.value = "Pick a location on the smokestack and information about that location will show up here.\n\nInstructions:\n\nMobile - swipe left and right to ratate the smoke stack. Drag with two fingers to move up and down. Pinch with two fingers to zoom in. Un-pinch to zoom out. Tap on a sphere to to view an annotation.\n\nComputer - left click and drag to ratate the smoke stack left or right. Right click and drag to move up and down. Scroll to zoom in and out. Left click on a sphere to view an annotation.";
             }
         }
         else {
