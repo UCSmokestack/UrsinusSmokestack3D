@@ -50,6 +50,9 @@ class ArtCanvas {
 
         this.paperNote = document.getElementById("paperNote");
 
+        // cylinder outlines
+        this.cylinders = [];
+
         // Setup scene
         let scene = new THREE.Scene();
         scene.background = new THREE.Color('gray');
@@ -251,6 +254,22 @@ class ArtCanvas {
                 this.paperNote.src = "paperNotes/" + pickedSphere.text;
             }
         }
+        this.highlightPick(pickedSphere);
+    }
+
+    /**
+     * 
+     * @param {object} pickedSphere 
+     */
+    highlightPick(pickedSphere){
+        // get the file location
+        let location = ("savedAnnotations/" + pickedSphere.text).substring(0, 17 + pickedSphere.text.length - 3) + "json";
+        $.getJSON(location, function(data){
+            // draw cylinders that connect each point
+            for(let i = 0; i < data.length; i++){
+                console.log(i);
+            }
+        });
     }
 
     /**
@@ -511,6 +530,31 @@ class ArtCanvas {
         sphere.text = "";
         this.annoTextBox.value = "Type new description here";
         this.handleTyping();
+    }
+
+    addOutlineCylinder(sphereA, sphereB){
+        let pointA = [sphereA.position.x, sphereA.position.y, sphereA.position.z];
+        let pointB = [sphereB.position.x, sphereB.position.y, sphereB.position.z];
+        // calculate center
+        let center = [(pointA[0]+pointB[0])/2, (pointA[1]+pointB[1])/2, (pointA[2]+pointB[2])/2];
+
+        // calculate length
+        let len = ((pointA[0]-pointB[0])**2 + (pointA[1]-pointB[1])**2 + (pointA[2]-pointB[2])**2)**0.5;
+
+        // create the cylinder
+
+        // set the length
+
+        // orient the cylinder
+
+        const geometry = new THREE.CylinderGeometry( 5, 5, 20, 32 );
+        const material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+        const cylinder = new THREE.Mesh( geometry, material );
+        scene.add( cylinder );
+    }
+
+    removeCylander(){
+
     }
 }
 
