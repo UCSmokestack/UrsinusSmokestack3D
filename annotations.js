@@ -1,5 +1,6 @@
 
 let allAnnotations = [];
+let annoPromiseFulfilled = false;
 let annotationPromise = new Promise((resolve, reject) => {
     $.getJSON( "allAnnotations.json", function(data) {
         // Step 1: Filter out spurious annotations
@@ -30,6 +31,7 @@ let annotationPromise = new Promise((resolve, reject) => {
             anno.y = y;
             anno.z = z;
         }
+        annoPromiseFulfilled = true;
         resolve();
     });
 });

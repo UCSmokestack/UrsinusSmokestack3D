@@ -263,13 +263,15 @@ class ArtCanvas {
      */
     highlightPick(pickedSphere){
         // get the file location
-        let location = ("savedAnnotations/" + pickedSphere.text).substring(0, 17 + pickedSphere.text.length - 3) + "json";
-        $.getJSON(location, function(data){
-            // draw cylinders that connect each point
-            for(let i = 0; i < data.length; i++){
-                console.log(i);
-            }
-        });
+        if (!(pickedSphere === null)) {
+            let location = ("savedAnnotations/" + pickedSphere.text).substring(0, 17 + pickedSphere.text.length - 3) + "json";
+            $.getJSON(location, function(data){
+                // draw cylinders that connect each point
+                for(let i = 0; i < data.length; i++){
+                    console.log(i);
+                }
+            });
+        }
     }
 
     /**
@@ -553,7 +555,7 @@ class ArtCanvas {
         scene.add( cylinder );
     }
 
-    removeCylander(){
+    removeCylinder(){
 
     }
 }
