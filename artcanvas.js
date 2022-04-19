@@ -12,6 +12,20 @@
 // https://www.tutorialspoint.com/webgl/webgl_modes_of_drawing.htm
 // https://stackoverflow.com/questions/14479435/get-touchstart-coordinate-on-current-element
 
+
+function findGetParameter(parameterName) {
+    let result = null,
+        tmp = [];
+    location.search
+        .substr(1)
+        .split("&")
+        .forEach(function (item) {
+            tmp = item.split("=");
+            if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+        });
+    return result;
+}
+
 const SPHERE_SIZE = 0.02;
 const SMALL_SPHERE_SIZE = 0.005;
 
@@ -248,27 +262,28 @@ class ArtCanvas {
     handleAnnotationPick(pos) {
         let pickedSphere = this.pickHelper.pick(pos);
         if (!(pickedSphere === null)) {
-            this.pickedSphere = pickedSphere;
-            //this.annoTextBox.value = pickedSphere.text;
-            if(this.paperNote != null){
-                this.paperNote.src = "paperNotes/" + pickedSphere.text;
-            }
+            this.highlightPick(pickedSphere);
         }
-        this.highlightPick(pickedSphere);
     }
 
     /**
-     * 
+     * Highight a particular picked sphere and put up its associated
+     * annotation image in the display area
      * @param {object} pickedSphere 
      */
     highlightPick(pickedSphere){
         // get the file location
         if (!(pickedSphere === null)) {
+            this.pickedSphere = pickedSphere;
+            //this.annoTextBox.value = pickedSphere.text;
+            if(this.paperNote != null){
+                this.paperNote.src = "paperNotes/" + pickedSphere.text;
+            }
             let location = ("savedAnnotations/" + pickedSphere.text).substring(0, 17 + pickedSphere.text.length - 3) + "json";
             $.getJSON(location, function(data){
                 // draw cylinders that connect each point
                 for(let i = 0; i < data.length; i++){
-                    console.log(i);
+                    //console.log(i);
                 }
             });
         }
@@ -315,6 +330,7 @@ class ArtCanvas {
      */
     loadAnnotations(data) {
         let radius = SPHERE_SIZE;
+        this.annotations = [];
         for (let i = 0; i < data.length; i++) {
             if (this.dragging){
                 radius = SMALL_SPHERE_SIZE;
@@ -329,6 +345,15 @@ class ArtCanvas {
             sphere.position.y = data[i].y;
             sphere.position.z = data[i].z;
             sphere.text = data[i].text;
+        }
+        let idx = findGetParameter("annoIdx");
+        if (!(idx === null)) {
+            let anno = this.annotations[idx];
+            idx = parseInt(idx);
+            this.highlightPick(anno);
+            this.pickHelper.selectNew(anno);
+            this.controls.target.y = anno.position.y;
+            // TODO: Finish changing the camera to look at the point
         }
     }
 

@@ -48,12 +48,14 @@ annotationPromise.then(function() {
         .attr("idx", i)
         .on("click", function() {
             var idx = d3.select(this).attr("idx");
-            console.log(idx);
+            const url = "index.html?" + "annoIdx=" + idx;
+            document.location.href = url; // Redirect to login URL
         })
         .on("touchstart", function() {
             var idx = d3.select(this).attr("idx");
-            console.log(idx);
-        });;
+            const url = "index.html?" + "annoIdx=" + idx;
+            document.location.href = url; // Redirect to login URL
+        });
     }
 });
 
