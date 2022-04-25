@@ -391,6 +391,7 @@ class ArtCanvas {
             objLoader.load(filename, function(object) {       
                 canvas.textureMesh = object;
                 canvas.scene.add(object);
+                console.log(object.position);
                 canvas.loadMeshPickerTexture(filename);
                 requestAnimationFrame(canvas.render.bind(canvas));
             });
