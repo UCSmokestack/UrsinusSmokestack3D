@@ -55,12 +55,14 @@ class ArtCanvas {
         this.handleTyping();
 
         this.annoCheckbox = document.getElementById("displayAnnotations");
-        this.annoCheckbox.addEventListener("change", function() {
-            for (let i = 0; i < that.annotations.length; i++) {
-                that.annotations[i].visible = that.annoCheckbox.checked;
-            }
-        });
-        this.annoCheckbox.checked = true;
+        if (!(this.annoCheckbox === null)) {
+            this.annoCheckbox.addEventListener("change", function() {
+                for (let i = 0; i < that.annotations.length; i++) {
+                    that.annotations[i].visible = that.annoCheckbox.checked;
+                }
+            });
+            this.annoCheckbox.checked = true;
+        }
 
         this.paperNote = document.getElementById("paperNote");
 
